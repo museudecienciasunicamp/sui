@@ -1,0 +1,121 @@
+# Copyright 2011-2013, Museu Exploratório de Ciências da Unicamp (http://www.museudeciencias.com.br)
+#
+# Licensed under The MIT License
+# Redistributions of files must retain the above copyright notice.
+---
+module: "ui"
+need_invitation: false
+quem_pode: ["estudante", "professor", "diretor", "secretario", "outro"]
+promote: true
+type: 'agendamento'		# grande_evento, agendamento, simples	
+subscription_steps:
+  regulamento:
+    title: "Regulamento"
+    subtitle: "Leia atentamente o regulamento"
+    checkboxes:
+      - "Declaro ter lido tudo e concordar com o regulamento"
+
+  instituicao:
+    title: "Instituição"
+    subtitle: "De qual escola / instituição serão os participantes?"
+    obrigatorio: false
+      
+  dados_especificos:
+    title: "A Palestra"
+    incorporar: "MexcLectures.MexcSchedule"
+    formulario:
+      mexc_lecture_name:
+        tipo: texto
+        rotulo: "Palestra"
+        requerido: true
+      date_1:
+        tipo: texto
+        rotulo: "Data 1"
+        requerido: true
+      date_1_period:
+        tipo: opcoes
+        rotulo: "Periodo da data 1"
+        requerido: false
+        opcoes:
+          manha: "Manhã"
+          tarde: "Tarde"
+          noite: "Noite"
+      date_2:
+        tipo: texto
+        rotulo: "Data 2"
+      date_2_period:
+        tipo: opcoes
+        rotulo: "Periodo da data 2"
+        opcoes:
+          manha: "Manhã"
+          tarde: "Tarde"
+          noite: "Noite"
+      date_3:
+        tipo: texto
+        rotulo: "Data 3"
+      date_3_period:
+        tipo: opcoes
+        rotulo: "Periodo da data 3"
+        opcoes:
+          manha: "Manhã"
+          tarde: "Tarde"
+          noite: "Noite"
+      lect_place:
+        tipo: opcoes
+        rotulo: "Onde será?"
+        opcoes:
+          patio: 'Pátio'
+          sala: 'Sala de aula / vídeo'
+          auditorio: 'Auditório'
+          quadra: 'Quadra'
+          outro: 'Outro'
+      lect_place_ag:
+        tipo: texto
+        rotulo: "Onde será? / Outro"
+      lect_ceiling:
+        tipo: opcoes
+        rotulo: "O espaço possui cobertura?"
+        opcoes:
+          "yes": "Sim"
+          "no": "Não"
+      lect_lighting:
+        tipo: opcoes
+        rotulo: "Ambiente adequado para projeção com data show?"
+        opcoes:
+          "yes": "Sim"
+          "no": "Não"
+      lect_about_space:
+        tipo: texto_grande
+        rotulo: "Informações extras (opcionais)"
+      lect_space:
+        tipo: multiplas_opcoes
+        rotulo: "Como é esse espaço?"
+        opcoes:
+          power_plugs: 'Possui tomadas (fornecimento de energia elétrica 110V ou 220V)'
+          sound: 'Possui equipamento de som funcionando adequadamente'
+          projection: 'Possui tela de projeção em condições de uso'
+          projector: 'Possui aparelho data show funcionando adequadamente'
+          computer: 'Possui computador com programa que lê arquivos de Power Point versão 2007 em condições de uso'
+        
+
+  confirmacao_dados:
+    title: "Confirmação de cadastro"
+
+  aprovacao:
+    title: "Aprovação do museu"
+    pagamento: true
+
+  pagamento:
+    title: "Pagamento"
+    metodo: "boleto_funcamp"
+
+  relatorio:
+    title: "Relatório final"
+
+texts:
+  regulamento:
+    title: "O regulamento do Ui"
+    description: "Escreva aqui o regulamento da inscrição do Ui"
+colors:
+  fore: "#ddaadd"
+  back: "#e3e1e3"

@@ -1,0 +1,84 @@
+# Copyright 2011-2013, Museu Exploratório de Ciências da Unicamp (http://www.museudeciencias.com.br)
+#
+# Licensed under The MIT License
+# Redistributions of files must retain the above copyright notice.
+---
+module: "inscricao_teste"
+need_invitation: false
+quem_pode: ["estudante", "professor"]
+promote: true
+type: 'grande_evento'		# grande_evento, agendamento, simples	
+subscription_steps:
+  regulamento:
+    title: "Regulamento"
+    subtitle: "Leia atentamente o regulamento"
+    checkboxes:
+      - "Declaro ter lido tudo tudo tudo e concordar com cada palavra"
+
+  modalidade:
+    title: "Modalidade"
+    subtitle: "Escolha uma das modalidades abaixo"
+    modalidades:
+      ensino_fundamental: 
+        title: "Ensino Fundamental de 6º ao 9º anos"
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean neque eros, pharetra a rutrum vel, suscipit non leo. Curabitur lobortis enim id ante adipiscing eget facilisis dolor volutpat. Aenean vulputate lobortis nisl non molestie. Quisque ante metus, auctor quis pellentesque consectetur, vulputate sed odio."
+      ensino_medio:
+        title: "Ensino Médio"
+        description: "Nunc rhoncus semper dapibus. Proin imperdiet leo a ligula accumsan non gravida velit porta. Aliquam vitae augue sed nibh tincidunt porttitor. Vivamus ut risus turpis, id cursus lacus. Integer in mauris tortor. "
+      livre:
+        title: "Livre-leve-solto"
+        description: "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut sed turpis mi. Nulla mauris dui, lacinia quis mollis et, gravida ut libero."
+        configuration:
+          subscription_steps:
+            participantes:
+              title: "Participantes"
+            aprovacao:
+              title: "Aprovação"
+
+  instituicao:
+    title: "Instituição"
+    subtitle: "De qual escola / instituição serão os participantes?"
+    obrigatorio: false
+
+  participantes:
+    title: "Participantes"
+    equipe_com_nome: true
+    labels:
+      team_name: "Qual será o nome da equipe?"
+      members: "Quem serão os membros da equipe?"
+    papeis:
+      orientador:
+        title: "Orientador"
+        precisa: [1,1]
+        quem_pode: ["professor"]
+        description: "Cabe ao orientador descascar batatas e dançar um tango toda vez que soar o sino da manhã. Ah, o sino da manhã: pode rir agora que o fio da maldade se enrola."
+      capitao:
+        title: "Capitão"
+        description: "Cabe ao capitão da equipe beber Coca-Cola a cada 30 minutos de atividade."
+        precisa: [1,1]
+        quem_pode: ["estudante", "professor"]
+      membro:
+        title: "Membro da equipe"
+        title_pl: "Membros da equipe"
+        precisa: [2,3]
+        quem_pode: ["estudante"]
+
+  aprovacao:
+    title: "Aprovação do museu"
+
+  confirmacao:
+    title: "Confirmação de cadastro"
+
+  pagamento:
+    title: "Pagamento"
+
+  relatorio:
+    title: "Relatório final"
+
+texts:
+  regulamento:
+    title: "O regulamento deste programa"
+    description: "Escreva aqui o regulamento da inscrição de teste"
+colors:
+  fore: "#ddaadd"
+  back: "#e3e1e3"

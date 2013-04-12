@@ -1,0 +1,162 @@
+# Copyright 2011-2013, Museu Exploratório de Ciências da Unicamp (http://www.museudeciencias.com.br)
+#
+# Licensed under The MIT License
+# Redistributions of files must retain the above copyright notice.
+---
+module: "od_na_pte_ct"
+need_invitation: false
+quem_pode: ["estudante", "professor"]
+promote: true
+type: 'agendamento' # grande_evento, agendamento, simples
+subscription_steps:
+  regulamento:
+    title: "Regulamento"
+    subtitle: "Leia atentamente o regulamento"
+    checkboxes:
+      - "Declaro ter lido por completo e concordar com o regulamento"
+
+  instituicao:
+    title: "Instituição"
+    subtitle: "De qual escola / instituição serão os participantes?"
+    obrigatorio: false
+
+  dados_especificos:
+    title: "O agendamento"
+    formulario:
+      programas:
+        rotulo: "Qual(is) programa(s) deseja agendar?"
+        descricao: "Caso queira agendar mais de um programa no mesmo dia, marque mais de uma opção."
+        tipo: multiplas_opcoes
+        opcoes:
+          od: "Oficina Desafio"
+          pte: "Praça Tempo-Espaço"
+          pct: "Praça Clima-Tempo"
+          na: "NanoAventura"
+
+      data_1:
+        tipo: texto
+        rotulo: "Opção de data 1"
+        requerido: true
+
+      data_1_periodo:
+        tipo: opcoes
+        rotulo: "Período da data 1"
+        requerido: true
+        opcoes:
+          manha: "Manhã"
+          tarde: "Tarde"
+          noite: "Noite"
+          dia_todo: "O dia inteiro"
+          qualquer: "Qualquer um"
+
+      data_2:
+        tipo: texto
+        rotulo: "Opção de data 2"
+        requerido: true
+
+      data_2_periodo:
+        tipo: opcoes
+        rotulo: "Período da data 2"
+        requerido: true
+        opcoes:
+          manha: "Manhã"
+          tarde: "Tarde"
+          noite: "Noite" 
+          dia_todo: "O dia inteiro"
+          qualquer: "Qualquer um"
+
+      data_3:
+        tipo: texto
+        rotulo: "Opção de data 3"
+        requerido: true
+
+      data_3_periodo:
+        tipo: opcoes
+        rotulo: "Período da data 3"
+        requerido: true
+        opcoes:
+          manha: "Manhã"
+          tarde: "Tarde"
+          noite: "Noite"
+          dia_todo: "O dia inteiro"
+          qualquer: "Qualquer um"
+
+      quantidade_participantes:
+        tipo: opcoes
+        rotulo: "Quantos participantes está prevendo?"
+        requerido: true
+        opcoes:
+          _1020: "10 a 20"
+          _2130: "21 a 30"
+          _3140: "31 a 40"
+          _4150: "41 a 50"
+          _5160: "51 a 60"
+          _6170: "61 a 70"
+          _7180: "71 a 80"
+
+      faixa_etaria:
+        tipo: multiplas_opcoes
+        rotulo: "Faixa etária dos participantes"
+        descrição: "Marque todas as alternativas que julgar pertinentes"
+        requerido: true
+        opcoes:
+          _67: "6-7 anos"
+          _89: "8-9 anos"
+          _1011: "10-11 anos"
+          _1213: "12-13 anos"
+          _1415: "14-15 anos"
+          _1617: "16-17 anos"
+          _1718: "17-18 anos"
+          _1921: "19-21 anos"
+          _2125: "21-25 anos"
+          _2630: "26-30 anos"
+          _3140: "31-40 anos"
+          _4060: "41-60 anos"
+          _65mais: "65+ anos"
+
+      necessidades_especiais:
+        tipo: texto_grande
+        rotulo: "Pessoas com deficiência"
+        descrição: "Caso alguém do grupo necessite de auxílio especial, favor descrever o tipo de auxílio necessário."
+        requerido: false
+
+      caracterista_local:
+        tipo: opcoes
+        rotulo: "Onde?"
+        requerido: true
+        opcoes:
+          no_museu: 'No Museu'
+          proprio_aberto: 'Local próprio, ambiente aberto (apenas Oficina Desafio)'
+          proprio_galpao: 'Local próprio, galpão (apenas Oficina Desafio)'
+          endereco: 'Outro endereço, especificar o endereço abaixo (apenas Oficina Desafio)'
+
+      local_proprio:
+        tipo: texto_grande
+        rotulo: "Endereço (caso não seja no Museu)"
+        requerido: false
+
+      observacoes_adicionais:
+        tipo: texto_grande
+        rotulo: "Observações adicionais"
+        descricao: "Caso tenha mais alguma obervação a fazer escreva-a aqui"
+        requerido: false
+
+  confirmacao_dados:
+    title: "Confirmação de cadastro"
+
+  aprovacao:
+    title: "Aprovação do museu"
+
+  pagamento:
+    title: "Pagamento"
+
+  relatorio:
+    title: "Relatório final"
+
+texts:
+  regulamento:
+    title: "O regulamento deste programa"
+    description: "Escreva aqui o regulamento da inscrição de teste"
+colors:
+  fore: "#ddaadd"
+  back: "#e3e1e3"

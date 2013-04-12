@@ -1,0 +1,57 @@
+# Copyright 2011-2013, Museu Exploratório de Ciências da Unicamp (http://www.museudeciencias.com.br)
+#
+# Licensed under The MIT License
+# Redistributions of files must retain the above copyright notice.
+---
+module: "event_team"
+need_invitation: false
+quem_pode: ["estudante", "professor", "diretor", "secretario", "outro"]
+promote: true
+type: 'simples'		# grande_evento, agendamento, simples	
+subscription_steps:
+  regulamento:
+    title: "Regulamento"
+    subtitle: "Leia atentamente o regulamento"
+    checkboxes:
+      - "Declaro ter lido tudo e concordar com o regulamento"
+
+  instituicao:
+    title: "Instituição"
+    subtitle: "De qual escola / instituição serão os participantes?"
+    obrigatorio: false
+
+  participantes:
+    title: "Responsaveis"
+    equipe_com_nome: true
+    labels:
+      team_name: "Qual será o nome da equipe?"
+      members: "Quem são os responsáveis?"
+    papeis:
+      responsavel:
+        title: "Responsável 1"
+        precisa: [1,1]
+        quem_pode: ["estudante", "professor", "diretor", "secretario", "outro"]
+        description: "Descrição qualquer."
+      membro:
+        title: "Membro da equipe"
+        title_pl: "Membros da equipe"
+        precisa: [1,5]
+        quem_pode: ["estudante"]
+
+  formulario_proprio
+    title: "Formulário adicional de cadastro"
+
+  confirmacao:
+    title: "Confirmação de cadastro"
+
+  relatorio:
+    title: "Relatório final"
+
+texts:
+  regulamento:
+    title: "O regulamento deste evento simples"
+    description: "Escreva aqui o regulamento para o evento simples"
+
+colors:
+  fore: "#ddaadd"
+  back: "#e3e1e3"

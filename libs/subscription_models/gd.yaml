@@ -1,0 +1,91 @@
+# Copyright 2011-2013, Museu Exploratório de Ciências da Unicamp (http://www.museudeciencias.com.br)
+#
+# Licensed under The MIT License
+# Redistributions of files must retain the above copyright notice.
+---
+module: "gd"
+need_invitation: false
+quem_pode: ["estudante", "professor", "outro"]
+promote: true
+callback: "/6-grandedesafio/equipes/callback/"
+start_url: "/6-grandedesafio/inscricao/index"
+type: 'grande_evento'		# grande_evento, agendamento, simples	
+subscription_steps:
+  regulamento:
+    title: "Regulamento"
+    subtitle: "Leia atentamente o regulamento"
+    checkboxes:
+      - "Declaro ter e concordar com o regulamento"
+
+  modalidade:
+    title: "Modalidade"
+    subtitle: "Em qual categoria sua equipe vai se inscrever? Registre aqui a categoria referente ao maior nível de escolaridade de seus integrantes."
+    modalidades:
+      fundamental_1: 
+        title: "Fundamental A"
+        description: "Até 7° ano (6ª série) do Ensino Fundamental"
+      fundamental_2:
+        title: "Fundamental B"
+        description: "8° e 9° ano (7ª e 8ª séries) do Ensino Fundamental"
+      superior:
+        title: "Ensino Médio"
+        description: ""
+      eja:
+        title: "EJA"
+        description: "Para estudantes matriculados na Educação de Jovens e Adultos"
+        configuration:
+          subscription_steps:
+            participantes:
+              title: "Participantes"
+            aprovacao:
+              title: "Aprovação"
+
+  instituicao:
+    title: "Escola"
+    subtitle: "De qual escola / instituição serão os participantes?"
+    obrigatorio: true
+
+  participantes:
+    title: "Participantes"
+    equipe_com_nome: true
+    labels:
+      team_name: "Qual será o nome da equipe?"
+      members: "Quem serão os membros da equipe?"
+    papeis:
+      capitao:
+        title: "Capitão"
+        description: "O capitão será a pessoa responsável pela comunicação da equipe com o Museu. Por isso, é muito importante preencher o email do capitão corretamente, pois toda comunicação é feita pelo site e pelo email!"
+        precisa: [1,1]
+        quem_pode: ["estudante"]
+      membro:
+        title: "Membro da equipe"
+        title_pl: "Membros da equipe"
+        precisa: [1,5]
+        quem_pode: ["estudante", "outro"]
+      orientador:
+        title: "Orientador"
+        description: "Não é obrigatório, mas pode ajudar muito ter um adulto (pai, mãe, professor(a), colega, etc.) para ser o Orientador da Equipe."
+        precisa: [0,1]
+        quem_pode: ["professor", "outro"]
+
+  pagamento:
+    title: "Pagamento"
+    metodo: "boleto_funcamp"
+    grupos_de_preco:
+      publica:
+        nome: 'Escolas públicas'
+        info: '/SuiInstitution[type=public]'
+      particular:
+        nome: 'Escolas particulares'
+        info: '/SuiInstitution[type=private]'
+
+  relatorio:
+    title: "Relatório final"
+
+texts:
+  regulamento:
+    title: "O regulamento do Grande Desafio"
+    description: "Escreva aqui o regulamento"
+colors:
+  fore: "#F16022"
+  back: "#C5DF18"

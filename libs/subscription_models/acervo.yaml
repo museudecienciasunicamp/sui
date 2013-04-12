@@ -1,0 +1,104 @@
+# Copyright 2011-2013, Museu Exploratório de Ciências da Unicamp (http://www.museudeciencias.com.br)
+#
+# Licensed under The MIT License
+# Redistributions of files must retain the above copyright notice.
+---
+module: "acervo"
+need_invitation: false
+quem_pode: ["estudante", "professor", "diretor", "secretario", "outro"]
+promote: true
+type: 'simples' # grande_evento, agendamento, simples	
+subscription_steps:
+  regulamento:
+    title: "Regras para envio de documentos"
+    subtitle: "Por favor leia atentamente as regras para envio dos documentos"
+    checkboxes:
+      - "Declaro ter liddo as regras e estar ciente das mesmas"
+ 
+ 
+  dados_especificos:
+    title: "Classificação do documento"
+    formulario:
+      titulo:
+        tipo: texto
+        rotulo: "Título"
+        descricao: "Descreva em poucos caracteres o documento"
+        requerido: true
+        
+      titulo_original:
+        tipo: texto
+        rotulo: "Título original"
+        descricao: "Caso o documento tenha um título, o reescreva aqui"
+        requerido: false
+        
+      data:
+        tipo: texto
+        rotulo: "Data da produção do documento"
+        descricao: "Caso o detalhe seja desconhecido preencha só até a data conhecida. Por exemplo: 01/2013, 2013"
+        requerido: true
+        
+      localizacao:
+        tipo: texto
+        rotulo: "Cidade, estado e país onde o documento foi produzido"
+        requerido: true      
+  
+      suporte:
+        tipo: opcoes
+        rotulo: "Suporte"
+        requerido: true
+        opcoes:
+          cartilha: "Cartilha"
+          cartaz: "Cartaz"
+          folder: "Folder"
+          filipeta: "Filipeta"
+          manual: "Manual"
+          anuncio: "Anúncio"
+          outro: "Outro"
+      
+      outro_suporte:
+        tipo: "texto"
+        rotulo: "Outro suporte"
+        descricao: "Caso tenha preenchido a opcao 'Outro' no campo anterior, especifique aqui o suporte"
+        requerido: false
+        
+      instituicao_sediadora:
+        tipo: texto
+        rotulo: "Instituição sede"
+        descricao: "Caso seja um evento, coloque aqui o nome da instituição que sediou o evento."
+        requerido: false
+        
+      instituicao_responsavel:
+        tipo: texto
+        rotulo: "Instituição responsável"
+        descricao: "Instituição responsável pela produção do documento"
+        requerido: true
+        
+      linguagem:
+        tipo: texto
+        rotulo: "Linguagens"
+        descricao: "Quais linguagens estão presentes no documento?"
+        
+      palavras_chave:
+        tipo: texto
+        rotulo: "Palavras-chave sugeridas"
+        descricao: "Escreva elas separadas por vírgulas."
+        
+      documentos_escaneados:
+        tipo: anexo
+        rotulo: "Imagens escaneadas do documento"
+        descricao: "Faça um zip com as imagens escaneadas em JPG"
+  
+  aprovacao:
+    title: "Avaliação das submissões"
+  
+  relatorio:
+    title: "Relatório final"
+
+texts:
+  regulamento:
+    title: "O regulamento do acervo digital"
+    description: "Escreva aqui o regulamento para o acervo digital"
+
+colors:
+  fore: "#ddaadd"
+  back: "#e3e1e3"

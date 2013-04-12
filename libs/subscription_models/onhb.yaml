@@ -1,0 +1,76 @@
+# Copyright 2011-2013, Museu Exploratório de Ciências da Unicamp (http://www.museudeciencias.com.br)
+#
+# Licensed under The MIT License
+# Redistributions of files must retain the above copyright notice.
+---
+module: "onhb"
+need_invitation: false
+quem_pode: ["estudante", "professor"]
+promote: true
+# callback: "/4-olimpiada/equipes/callback/"
+start_url: "/4-olimpiada/inscricoes/index"
+type: 'grande_evento'		# grande_evento, agendamento, simples	
+subscription_steps:
+  regulamento:
+    title: "Regulamento"
+    subtitle: "Leia atentamente o regulamento"
+    checkboxes:
+      - "Declaro ter e concordar com o regulamento"
+
+  instituicao:
+    title: "Escola"
+    subtitle: "De qual escola / instituição serão os participantes?"
+    obrigatorio: true
+
+  participantes:
+    title: "Participantes"
+    equipe_com_nome: true
+    inscrevente_precisa_participar: true
+    mesma_instituicao: true
+    labels:
+      team_name: "Qual será o nome da equipe?"
+      members: "Quem serão os membros da equipe?"
+    papeis:
+      membro:
+        title: "Membro da equipe"
+        title_pl: "Membros da equipe"
+        precisa: [3,3]
+        quem_pode: {estudante: [8,9,10,11,12,14]}
+        exclusivo: true
+      orientador:
+        title: "Orientador"
+        description: ""
+        precisa: [1,1]
+        quem_pode: {professor: [6]}
+        exclusivo: false
+
+  confirmacao_dados:
+    title: "Confirmação dos dados"
+    subtitle: "Verifique se os dados enviados até agora não possuem erros."
+  
+  confirmacao_email:
+    title: "Confirmação de e-mail"
+    subtitle: "É necessário que todos os usuários tenham suas contas validadas para que a inscrição continue."
+    precisa: "*"
+
+  pagamento:
+    title: "Pagamento"
+    metodo: "boleto_funcamp"
+    grupos_de_preco:
+      publica:
+        nome: 'Escolas públicas'
+        info: '/SuiInstitution[type=public]'
+      particular:
+        nome: 'Escolas particulares'
+        info: '/SuiInstitution[type=private]'
+
+  relatorio:
+    title: "Relatório final"
+
+texts:
+  regulamento:
+    title: "O regulamento do Grande Desafio"
+    description: "Escreva aqui o regulamento"
+colors:
+  fore: "#000000"
+  back: "#BE2079"
