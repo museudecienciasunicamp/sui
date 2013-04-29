@@ -31,32 +31,43 @@
 
 	
 		// Institution
-		echo $this->Bl->h4Dry(__d('sui', 'Escola / Instituição', true));
-		echo $this->Bl->sp();
-			echo $application['SuiInstitution']['name'];
-			if (!empty($application['SuiInstitution']['unity_name']))
-				echo ' &ndash; ', $application['SuiInstitution']['unity_name'];
-		
-			echo $this->Bl->br();
-		
-			echo $this->Bl->si();
-				Configure::load('Sui.types');
-				$type = Configure::read("Sui.InstitutionTypes.{$application['SuiInstitution']['type']}");
-				if (isset($type))
-					echo 'Instituição ', $type;
-
-				if (!empty($application['SuiInstitution']['sub_type']))
-					echo ', ', Configure::read("Sui.InstitutionSubTypes.{$application['SuiInstitution']['sub_type']}");
-			echo $this->Bl->ei();
-			echo $this->Bl->br();
-		
-			echo $application['SuiInstitution']['address'], ', ', $application['SuiInstitution']['number'];
-			echo $this->Bl->br();
-			echo $application['SuiInstitution']['city'], ' &ndash; ', $application['SuiInstitution']['state'];
-			echo $this->Bl->br();
-		echo $this->Bl->ep();
-		echo $this->Bl->br();
-
+		if (!empty($subscription_config['subscription_steps']['instituicao']))
+		{
+			echo $this->Bl->h4Dry(__d('sui', 'Escola / Instituição', true));
+			if (empty($application['SuiInstitution']['id']))
+			{
+				echo $this->Bl->pDry('Esta inscrição não está vinculada com uma instituição.');
+				echo $this->Bl->br();
+			}
+			else
+			{
+				echo $this->Bl->sp();
+					echo $application['SuiInstitution']['name'];
+					if (!empty($application['SuiInstitution']['unity_name']))
+						echo ' &ndash; ', $application['SuiInstitution']['unity_name'];
+				
+					echo $this->Bl->br();
+				
+					echo $this->Bl->si();
+						Configure::load('Sui.types');
+						$type = Configure::read("Sui.InstitutionTypes.{$application['SuiInstitution']['type']}");
+						if (!empty($type))
+						{
+							echo 'Instituição ', $type;
+							if (!empty($application['SuiInstitution']['sub_type']))
+								echo ', ', Configure::read("Sui.InstitutionSubTypes.{$application['SuiInstitution']['sub_type']}");
+						}
+					echo $this->Bl->ei();
+					echo $this->Bl->br();
+				
+					echo $application['SuiInstitution']['address'], ', ', $application['SuiInstitution']['number'];
+					echo $this->Bl->br();
+					echo $application['SuiInstitution']['city'], ' &ndash; ', $application['SuiInstitution']['state'];
+					echo $this->Bl->br();
+				echo $this->Bl->ep();
+				echo $this->Bl->br();
+			}
+		}
 	
 	
 		// Members
@@ -150,13 +161,17 @@
 		echo 'Caso haja algum dos seguintes erros:<br> ';
 		echo '1. erro no e-mail de algum dos cadastrados;<br> ';
 		echo '2. erro nos dados da instituição;<br> ';
-		echo '3. erro no nome de equipe;<br> ';
+		if (!empty($subscription_config['subscription_steps']['participantes']['equipe_com_nome']))
+			echo '3. erro no nome de equipe;<br> ';
 	echo $this->Bl->ep();
 	echo $this->Bl->sp();
 		echo 'Para corrigir é necessário cancelar esta inscrição e começar de novo. Você pode fazer isto ';
 		echo $this->Bl->anchor(array(), array('url' => array('plugin' => 'sui', 'controller' => 'sui_applications', 'action' => 'cancelar', $application['SuiApplication']['id'])), 'clicando aqui');
 		echo '.';
-	echo $this->Bl->pDry('Caso haja erro nos dados de alguns participantes, eles ainda podem ser corrigidos por eles mesmos ao confirmarem seu cadastro. Eles receberam um convite com um link para confirmar o cadastro, nesta confirmação poderão alterar os seus dados.');
+	echo $this->Bl->ep();
+
+	if (!empty($subscription_config['subscription_steps']['participantes']))
+		echo $this->Bl->pDry('Caso haja erro nos dados de alguns participantes, eles ainda podem ser corrigidos por eles mesmos ao confirmarem seu cadastro. Eles receberam um convite com um link para confirmar o cadastro, nesta confirmação poderão alterar os seus dados.');
 
 	
 	echo $this->Bl->br(),$this->Bl->br();
@@ -169,15 +184,25 @@
 			'onComplete' => array('js' => 'if((json = response.responseJSON) && json.redirect) location.href = json.redirect')
 		)
 	));
+
+		if (!empty($application['SuiInstitution']['id']))
+		{
+			if (!empty($subscription_config['subscription_steps']['participantes']))
+				$confirmo = 'Confirmo que estes dados estão corretos, que todos os alunos são alunos regulares da escola "'.h($application['SuiInstitution']['name']).'", e estou ciente que estes serão os dados que serão usados no certificado de participação e de que não poderei alterá-los.';
+			else
+				$confirmo = 'Confirmo que estes dados estão corretos, que estou vinculado à escola / instituição "'.h($application['SuiInstitution']['name']).'" e que estou ciente que estes serão os dados utilizados para a minha inscrição e que não poderei alterá-los.';
+		}
+		else
+		{
+			$confirmo = 'Confirmo que estes dados estão corretos, que estou ciente que estes serão os dados que serão usados no certificado de participação e que não poderei alterá-los.';
+		}
 		echo $this->Buro->input(null,
 			array(
 				'fieldName' => 'check',
 				'type' => 'multiple_checkbox',
 				'label' => false,
 				'options' => array(
-					'options' => array(
-						'confirmo' => 'Confirmo que estes dados estão corretos e que todos os alunos são alunos regulares da escola "'.$application['SuiInstitution']['name'].'", e estou ciente que estes serão os dados que serão usados no certificado de participação e de que não poderei alterá-los.'
-					)
+					'options' => compact('confirmo')
 				)
 			)
 		 );

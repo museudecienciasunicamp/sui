@@ -111,9 +111,9 @@ switch ($type[0])
 									'url' => array('plugin' => 'sui', 'controller' => 'sui_feedbacks', 'action' => 'edit'),
 									'baseID' => 'approve_form',
 									'callbacks' => array(
-										'onStart' => array('js' => "showPopup.curry('approving_message').defer();"),
+										'onStart' => array('js' => "showPopup.curry('wait_message').defer();"),
 										'onReject' => array('js' => "showPopup.curry('approving_error').defer(); $('approving_error').down('.message').update(\$H(json.validationErrors).values().join('<br />'))"),
-										'onSave' => array('js' => "showPopup.curry('approving_ok').defer();"),
+										'onSave' => array('js' => "showPopup.curry('success_message').defer();"),
 										'onError' => array('popup' => 'Ocorreu algum erro desconhecido. Tente novamente mais tarde.')
 									)
 								));
@@ -176,59 +176,7 @@ switch ($type[0])
 
 								if (isset($config['subscription_steps']['pagamento']))
 								{
-									$form .= $this->Buro->sinput(array(), array(
-											'type' => 'super_field',
-											'label' => __d('sui', 'Pagamento', true)
-										));
-
-									$form .= $this->Buro->input(
-											array('id' => 'manual_fee'),
-											array(
-												'type' => 'text',
-												'fieldName' => 'SuiApplication.manual_fee',
-												'label' => __d('sui', 'Preço da inscrição', true),
-												'instructions' => __d('sui', 'Esse será o preço usado para gerar o pagamento. Se for o caso, avise pela mensagem ao usuário sobre o novo preço.', true)
-											)
-										);
-
-									$form .= $this->Bl->a(
-										array('id' => 'change_fee', 'href' => '#'),
-										array(),
-										__d('sui', 'Alterar o valor', true)
-									);
-
-									$form .= $this->Html->scriptBlock("
-										document.observe('dom:loaded', function(ev){
-											$('change_fee').on('click', function(ev){ ev.stop(); $('manual_fee').enable(); $('change_fee').hide(); });
-											$('manual_fee').insert({after: $('change_fee')}).insert({after: '<br>'});
-										});
-									");
-
-									$form .= $this->Bl->br();
-
-									$form .= $this->Buro->input(
-										array(),
-										array(
-											'type' => 'datetime',
-											'fieldName' => 'SuiApplication.manual_due_date',
-											'label' => __d('sui', 'Vencimento', true),
-											'instructions' => __d('sui', 'É possível alterar a data de vencimento, caso deseje.', true),
-											'options' => array(
-												'empty' => true,
-												'dateFormat' => 'DMY',
-												'timeFormat' => false,
-												'interval' => 10,
-											)
-										)
-									);
-
-									$form .= $this->Bl->br();
-									$form .= $this->Bl->pDry(
-										__d('sui', 'Vencimento atual: ', true)
-										. $this->Bl->span(array('id' => 'due_date'))
-									);
-
-									$form .= $this->Buro->einput();
+									$form .= $this->element('sui_application_payment_admin', array('plugin' => 'sui', 'referee' => 'feedback'));
 								}
 
 								$form .= $this->Buro->input(
@@ -287,17 +235,17 @@ switch ($type[0])
 								'content' => $this->Bl->div(array('class' => 'message')),
 								'callback' => 'showPopup.curry("approving").defer()'
 							));
-							echo $this->Popup->popup('approving_message', array(
-								'type' => 'notice',
-								'links_callbacks' => '',
-								'content' => $this->Bl->pDry(__d('sui', 'Aguarde...', true)),
-								'actions' => true
-							));
-							echo $this->Popup->popup('approving_ok', array(
+							echo $this->Popup->popup('success_message', array(
 								'type' => 'notice',
 								'content' => 'Sucesso! Agora a lista será carregada.',
 								'actions' => array('ok' => 'Ok'),
 								'callback' => "$ajax_request"
+							));
+							echo $this->Popup->popup('wait_message', array(
+								'type' => 'notice',
+								'links_callbacks' => '',
+								'content' => $this->Bl->pDry(__d('sui', 'Aguarde...', true)),
+								'actions' => true
 							));
 						}
 						
@@ -417,6 +365,7 @@ switch ($type[0])
 
 						$canEdit = $this->JjAuth->can(array('backstage_edit_published', 'sui_edit_application'));
 						$canView = $this->JjAuth->can(array('backstage_view_item', 'sui_application'));
+						$hasPaymentStep = !empty($subscription_config['subscription_steps']['pagamento']);
 						
 						$links = $this->Bl->sdiv();
 
@@ -489,6 +438,33 @@ switch ($type[0])
 							}
 
 
+
+							$price = 
+							$due_date = false;
+							if ($hasPaymentStep)
+							{
+								$config = $subscription_config['subscription_steps']['pagamento'];
+								if (!empty($config['preco_padrao']))
+								{
+									$price = $config['preco_padrao'];
+								}
+								if (!empty($data['SuiApplication']['subscription_fee']))
+								{
+									$price = $data['SuiApplication']['subscription_fee'];
+								}
+								if (!empty($data['SuiApplication']['manual_fee']))
+								{
+									$price = $data['SuiApplication']['manual_fee'];
+								}
+								$price = $this->Js->object($price);
+
+								if ($data['SuiApplicationPeriod']['payment_date'])
+									$due_date = date('d/m/Y', strtotime($data['SuiApplicationPeriod']['payment_date']));
+								$due_date = $this->Js->object($due_date);
+								$payment = $this->Js->object($hasPaymentStep);
+							}
+
+
 							// Links for approving / disapproving the application
 							$showApprovingButtons = $canEdit
 											 && !empty($subscription_config['subscription_steps']['aprovacao'])
@@ -513,34 +489,9 @@ switch ($type[0])
 								$history = $this->Js->object(
 									$this->element(
 										'forms/subscription/aprovacao_log',
-										array(
-											'plugin' => 'sui',
-											'application' => $data,
-											'viewer' => 'admin'
-										)
+										array('plugin' => 'sui', 'application' => $data, 'viewer' => 'admin')
 									)
 								);
-
-								$price = false;
-								$config = $subscription_config['subscription_steps']['pagamento'];
-								if (!empty($config['preco_padrao']))
-								{
-									$price = $config['preco_padrao'];
-								}
-								if (!empty($data['SuiApplication']['subscription_fee']))
-								{
-									$price = $data['SuiApplication']['subscription_fee'];
-								}
-								if (!empty($data['SuiApplication']['manual_fee']))
-								{
-									$price = $data['SuiApplication']['manual_fee'];
-								}
-								$price = $this->Js->object($price);
-
-								$due_date = false;
-								if ($data['SuiApplicationPeriod']['payment_date'])
-									$due_date = date('d/m/Y', strtotime($data['SuiApplicationPeriod']['payment_date']));
-								$due_date = $this->Js->object($due_date);
 
 								$waiting_user_feedback =
 									$data['SuiApplication']['current_step'] == 'aprovacao' &&
@@ -549,19 +500,15 @@ switch ($type[0])
 
 								$links .= $this->BuroOfficeBoy->addHtmlEmbScript("
 									$('approve_{$data['SuiApplication']['id']}').observe('click', function(ev){
+										ev.stop(); 
 										var form = BuroCR.get('frmapprove_form');
 										$('no-form').show();
-										$('change_fee').hide();
 										$('waiting-user-feedback').hide();
 										if ($showForm){
 											$('sui_application_id_hidden').value='{$data['SuiApplication']['id']}';
 											form.reset().form.show();
-											if($price) {
-												$('manual_fee').value = $price
-												$('manual_fee').disable();
-												$('change_fee').show();
-											}
-											$('due_date').update($due_date);
+											if($payment)
+												window.paymentForm['feedback'].show($price, $due_date);
 											$('no-form').hide();
 										}else{ form.form.hide(); }
 										if ($waiting_user_feedback){
@@ -569,10 +516,60 @@ switch ($type[0])
 											$('waiting-user-feedback').show();
 										}
 										form.form.previous('div').update($history);
-										ev.stop(); showPopup('approving');
+										showPopup('approving');
 									});
 								");
 							}
+
+
+							if ($hasPaymentStep && $data['SuiApplication']['status'] == 'in_proccess')
+							{
+								$form_code = 'payment_for_' . $data['SuiApplication']['id'];
+								$generated = $this->Js->object(
+									$data['SuiApplication']['current_step'] == 'pagamento'
+									&& $data['SuiApplication']['step_status'] == 'generated'
+								);
+								$paid = $this->Js->object(!empty($data['SuiApplication']['payment_data_at']));
+
+								$htmlAttr = array(
+										'href' => '#',
+										'class' => 'link_button',
+										'id' => 'payment_'.$data['SuiApplication']['id']
+									);
+								$links .= $this->Bl->anchor($htmlAttr, array(), __d('sui','Pagamento / isenção', true));
+								$links .= $this->Html->scriptBlock("
+									$('payment_{$data['SuiApplication']['id']}').on('click', function(ev) {
+										ev.stop();
+										if ($generated) { alert('O usuário já gerou um boleto e por isso a edição do pagamento está bloqueada.'); return; }
+										if ($paid) { alert('O usuário já pagou essa inscrição.'); return; }
+										showPopup('payment');
+										window.paymentForm['$form_code'].show($price, $due_date);
+									});
+								");
+
+								$form = $this->Buro->sform(array(), array(
+									'model' => 'Sui.SuiApplication',
+									'url' => array('plugin' => 'sui', 'controller' => 'sui_applications', 'action' => 'admin_payment'),
+									'data' => $data,
+									'baseID' => $formID = uniqid(''),
+									'callbacks' => array(
+										'onStart' => array('js' => "showPopup.curry('wait_message').defer();"),
+										'onReject' => array('js' => "showPopup.curry('approving_error').defer(); $('approving_error').down('.message').update(\$H(json.validationErrors).values().join('<br />'))"),
+										'onSave' => array('js' => "showPopup.curry('success_message').defer();"),
+										'onError' => array('js' => "closePopup('wait_message'); if (error == 'application-with-active-payment') alert('Essa inscrição está com um pagamento ativo. Para evitar confusão, é necessário que o usuário cancele esse pagamento.'); else alert('Ocorreu algum erro ao atualizar o pagamento, o servidor retornou \''+error+'\'. Tente novamente mais tarde.');")
+									)
+								));
+									$form .= $this->Buro->input(array(), array('fieldName' => 'id', 'type' => 'hidden'));
+									$form .= $this->element('sui_application_payment_admin', array('plugin' => 'sui', 'referee' => $form_code));
+								$form .= $this->Buro->eform();
+
+								$links .= $this->Popup->popup('payment', array(
+									'type' => 'form',
+									'content' => $form,
+									'callback' => "if (action == 'ok') BuroCR.get('frm$formID').submits(); showPopup('waiting_message');"
+								));
+							}
+
 							
 
 							// Link for cancelling a application

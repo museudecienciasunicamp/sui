@@ -39,7 +39,7 @@ echo $this->Buro->sform(array(),
 		'model' => 'Sui.SuiPayment',
 		'url' => array('plugin' => 'sui', 'controller' => 'sui_payments', 'action' => 'save_payment'),
 		'callbacks' => array(
-			'onReject' => array('js' => "alert('Não foi possível gerar a cobrança. Verifique se todos os campos foram preenchidos.');"),
+			'onReject' => array('js' => "var string = 'Atenção! Corrija os problemas para prosseguir:\\n'; for (field in json.validationErrors) string += ' . ' + json.validationErrors[field] + '\\n'; alert(string);"),
 			'onSave' => array('js' => "if (json.redirect) location.href = json.redirect"),
 			'onError' => array('js' => "alert('Não foi possível gerar a cobrança. Tente novamente mais tarde.');")
 		)

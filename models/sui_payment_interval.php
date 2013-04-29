@@ -15,8 +15,49 @@
 class SuiPaymentInterval extends SuiAppModel
 {
 	var $name = 'SuiPaymentInterval';
+
+	var $displayField = 'internal_code';
 	
 	var $hasAndBelongsToMany = array('Sui.SuiSubscription');
+
+	var $validate = array(
+		'internal_code' => array(
+			'rule' => 'numeric',
+			'message' => 'Somente números',
+			'allowEmpty' => false
+		),
+		'code_start' => array(
+			'rule' => 'numeric',
+			'message' => 'Somente números',
+			'allowEmpty' => false
+		),
+		'code_end' => array(
+			'numeric' => array(
+				'rule' => 'numeric',
+				'message' => 'Somente números',
+				'allowEmpty' => false
+			),
+			'greater' => array(
+				'rule' => array('greaterThan', 'code_start'),
+				'message' => 'Deve ser maior que o código inicial'
+			)
+		),
+	);
+
+	function greaterThan($check, $thanWho)
+	{
+		if (empty($this->data[$this->alias][$thanWho]))
+			return true;
+
+		$valueToCompare = $this->data[$this->alias][$thanWho];
+		foreach ($check as $fieldName => $value)
+		{
+			if ($valueToCompare >= $value)
+				return false;
+		}
+
+		return true;
+	}
 	
 	function getNextPaymentCode($sui_subscription_id, $internal_code = false)
 	{
@@ -47,7 +88,7 @@ class SuiPaymentInterval extends SuiAppModel
 				'offset' => $first_interval['SuiPaymentInterval']['offset'],
 				'active' => $first_interval['SuiPaymentInterval']['offset'] != $first_interval['SuiPaymentInterval']['code_end']
 			)));
-			
+			// @todo fire a e-mail telling that the interval is running off.
 			if ($saved) {
 				return $first_interval;
 			}

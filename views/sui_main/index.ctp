@@ -149,8 +149,10 @@ if ($hasSubscriptionCloud)
 						case 'aprovacao':
 							if ($application['SuiApplication']['step_status'] == 'waiting_user_feedback')
 								$group = 'waiting_user_feedback';
-							else
+							elseif ($application['SuiApplication']['step_status'] == 'waiting_approval')
 								$group = 'waiting_approval';
+							else
+								$group = 'generic';
 							break;
 						
 						case 'confirmacao_email':

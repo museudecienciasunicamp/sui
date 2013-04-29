@@ -32,11 +32,11 @@ class SuiPayment extends SuiAppModel
 		'responsible_document' => array(
 			'valid' => array(
 				'rule' => array('validCpfCnpj'),
-				'message' => 'Não parece válido'
+				'message' => 'O número do documento informado não é válido'
 			),
 			'notEmpty' => array(
 				'rule' => array('notEmpty'),
-				'message' => 'Campo obrigatório'
+				'message' => 'O número do documento é obrigatório'
 			)
 		),
 		'responsible_email' => array(

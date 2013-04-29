@@ -7,7 +7,7 @@ module: "event_approval_payment"
 need_invitation: false
 quem_pode: ["estudante", "professor", "diretor", "secretario", "outro"]
 promote: true
-type: 'simples'		# grande_evento, agendamento, simples	
+type: 'simples'
 subscription_steps:
   regulamento:
     title: "Regulamento"
@@ -20,16 +20,15 @@ subscription_steps:
     subtitle: "De qual escola / instituição serão os participantes?"
     obrigatorio: false
 
-  formulario_proprio
+  formulario_proprio:
     title: "Formulário adicional de cadastro"
-	
+
   confirmacao:
     title: "Confirmação de cadastro"
 
   aprovacao:
     title: "Aprovação do museu"
-    pagamento: true
-	
+
   pagamento:
     title: "Pagamento"
     metodo: "boleto_funcamp"

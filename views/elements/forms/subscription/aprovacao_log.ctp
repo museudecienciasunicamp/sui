@@ -12,12 +12,13 @@
  * @link          https://github.com/museudecienciasunicamp/sui.git SUI public repository
  */
 
-if (empty($application['SuiFeedback']) || count($application['SuiFeedback']) == 1 && empty($application['SuiFeedback'][0]['answered']))
+if (empty($application['SuiFeedback']))
 {
 	echo $this->Bl->pDry(__d('sui', 'Nada no histórico, ainda.', true));
 }
 
 $viewer = isset($viewer) ? $viewer : 'user';
+$last = count($application['SuiFeedback'])-1;
 
 foreach ($application['SuiFeedback'] as $n => $feedback)
 {
@@ -60,6 +61,10 @@ foreach ($application['SuiFeedback'] as $n => $feedback)
 			)
 		));
 		echo $this->Bl->br();
+
+		if ($n == $last && $application['SuiApplication']['step_status'] == 'approved')
+			echo $this->Bl->pDry('Esta inscrição foi aprovada.');
+			
 		echo $this->Bl->sbox(array('class' => 'fixed'), array('size' => array('M' => 5, 'g' => 0)));
 			echo h($feedback['comment']);
 		echo $this->Bl->ebox();

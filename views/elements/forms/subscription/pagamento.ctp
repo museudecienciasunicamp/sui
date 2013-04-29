@@ -28,47 +28,60 @@ if (empty($application['SuiApplication']['subscription_fee']))
 	}
 }
 
-if (empty($application['SuiApplication']['subscription_fee']))
-{
-	echo __d('sui', 'Ocorreu um problema com a inscrição. Por favor, tente novamente mais tarde.');
-}
-else
+if (!empty($application['SuiApplication']['payment_free']))
 {
 	echo $this->Bl->sdiv(array('class' => 'sui_highlighted_subform'));
 		echo $this->Bl->h4Dry(__d('sui', 'Taxa de inscrição', true));
-		echo $this->Bl->h1Dry(money_format('%n', $application['SuiApplication']['subscription_fee']));
+		echo $this->Bl->h1Dry('Inscrição isenta');
 	echo $this->Bl->ediv();
 
 	echo $this->Bl->verticalSpacer();
-	
-	if ($application['SuiApplication']['step_status'] == 'generated')
+
+	echo $this->Bl->pDry('Sua inscrição está isenta do pagamento e, portanto, você pode seguir adiante clicando em "Próxima etapa", abaixo.');
+}
+else
+{
+	if (empty($application['SuiApplication']['subscription_fee']))
 	{
-		$link =  $this->Bl->anchor(
-			array(),
-			array('url' => array(
-				'plugin' => 'sui',
-				'controller' => 'sui_main',
-				'action' => 'index'
-			)),
-			__d('sui', 'página inicial', true)
-		);
-		echo 'Você já gerou o pagamento para essa inscrição. Acesse o link de cobrança pela '.$link.' de sua conta.';
+		echo __d('sui', 'Ocorreu um problema com a inscrição. Por favor, tente novamente mais tarde.');
 	}
 	else
 	{
-		echo $this->Bl->anchor(
-			array(),
-			array('url' => array('plugin' => 'sui', 'controller' => 'sui_payments', 'action' => 'gerar', $subscription['SuiSubscription']['slug'], $sui_application_id)),
-			__d('sui', 'Gerar uma cobrança para esta inscrição.', true)
-		);
-	}
-	
-	echo $this->Bl->verticalSpacer();
-	echo $this->Bl->verticalSpacer();
-	
-	echo $this->Bl->pDry(__d('sui', '* O pagamento pode demorar até 4 dias úteis para ser confirmado.'));
-}
+		echo $this->Bl->sdiv(array('class' => 'sui_highlighted_subform'));
+			echo $this->Bl->h4Dry(__d('sui', 'Taxa de inscrição', true));
+			echo $this->Bl->h1Dry(money_format('%n', $application['SuiApplication']['subscription_fee']));
+		echo $this->Bl->ediv();
 
+		echo $this->Bl->verticalSpacer();
+		
+		if ($application['SuiApplication']['step_status'] == 'generated')
+		{
+			$link =  $this->Bl->anchor(
+				array(),
+				array('url' => array(
+					'plugin' => 'sui',
+					'controller' => 'sui_main',
+					'action' => 'index'
+				)),
+				__d('sui', 'página inicial', true)
+			);
+			echo 'Você já gerou o pagamento para essa inscrição. Acesse o link de cobrança pela '.$link.' de sua conta.';
+		}
+		else
+		{
+			echo $this->Bl->anchor(
+				array(),
+				array('url' => array('plugin' => 'sui', 'controller' => 'sui_payments', 'action' => 'gerar', $subscription['SuiSubscription']['slug'], $sui_application_id)),
+				__d('sui', 'Gerar uma cobrança para esta inscrição.', true)
+			);
+		}
+		
+		echo $this->Bl->verticalSpacer();
+		echo $this->Bl->verticalSpacer();
+		
+		echo $this->Bl->pDry(__d('sui', '* O pagamento pode demorar até 4 dias úteis para ser confirmado.'));
+	}
+}
 echo $this->Buro->sform(null, array(
 	'model' => 'Sui.SuiApplication',
 	'url' => array('plugin' => 'sui', 'controller' => 'sui_subscriptions', 'action' => 'save_step', $data['SuiSubscription']['slug'], $sui_application_id, $step),

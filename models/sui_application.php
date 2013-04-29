@@ -208,11 +208,15 @@ class SuiApplication extends SuiAppModel
 		{
 			case 'confirmacao_dados':
 				$contain['SuiApplicationsSuiUser'] = array('SuiUser' => array('SuiUsersType', 'SuiGrade'));
-			break;
+				break;
 
 			case 'aprovacao':
 				$contain[] = 'SuiFeedback';
-			break;
+				break;
+
+			case 'relatorio':
+				$contain['SuiPayment'] = array('SuiReceivedPayment', 'conditions' => array('SuiPayment.status' => 'received'));
+				break;
 		}
 		return $this->getApplication($subscription_slug, $sui_application_id, $sui_user_id, false, $contain);
 	}
@@ -373,9 +377,6 @@ class SuiApplication extends SuiAppModel
 			break;
 			
 			case 'dados_especificos':
-				if (empty($application) && !empty($slug) && !empty($sui_user_id))
-					$application = $this->createApplication($slug, $sui_user_id);
-				
 				$valid = true;
 				if (!empty($step_config['incorporar']))
 				{
@@ -398,6 +399,8 @@ class SuiApplication extends SuiAppModel
 					}
 					else
 					{
+						if (empty($application) && !empty($slug) && !empty($sui_user_id))
+							$application = $this->createApplication($slug, $sui_user_id);
 						$application[$this->alias]['extra_data'] = $data[$Model->alias];
 					}
 				}
@@ -421,6 +424,8 @@ class SuiApplication extends SuiAppModel
 					}
 					else
 					{
+						if (empty($application) && !empty($slug) && !empty($sui_user_id))
+							$application = $this->createApplication($slug, $sui_user_id);
 						$application[$this->alias]['extra_data'] = $data[$this->alias]['extra_data'];
 					}
 				}
@@ -700,7 +705,11 @@ class SuiApplication extends SuiAppModel
 			case 'pagamento':
 				// Will always be 'wating payment'
 				// The stepFoward for this step will be called on SuiPayment::updateStatus()
-				$this->invalidate('payment_data_at', __d('sui', 'O pagamento ainda não foi detectado.', true));
+				// But just is case the option of free subscription turns on just in this step, than allow to step forward
+				if (!empty($application['SuiApplication']['payment_free']))
+					$application = $this->stepFoward($application, $step);
+				else
+					$this->invalidate('payment_data_at', __d('sui', 'O pagamento ainda não foi detectado.', true));
 			break;
 		}
 		if (isset($application[$this->alias]['modified']))
@@ -738,7 +747,12 @@ class SuiApplication extends SuiAppModel
 		{
 			return $application;
 		}
-		
+
+		if ($application['SuiApplication']['status'] != 'in_proccess')
+		{
+			return $application;
+		}
+
 		$steps = array_keys($application['SuiSubscription']['configuration']['subscription_steps']);
 		$current_step_index = array_search($application['SuiApplication']['current_step'], $steps);
 
@@ -755,6 +769,12 @@ class SuiApplication extends SuiAppModel
 		if ($application[$this->alias]['current_step'] == 'relatorio')
 		{
 			$application[$this->alias]['status'] = 'completed';
+		}
+
+		// When the user is free of charge, skip the payment step
+		if ($application[$this->alias]['current_step'] == 'pagamento' && !empty($application[$this->alias]['payment_free']))
+		{
+			return $this->stepFoward($application, $application[$this->alias]['current_step']);
 		}
 		
 		// @TODO This following block is hardcoded. Must retrieve this condition from SubScription.configuration

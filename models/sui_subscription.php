@@ -45,6 +45,10 @@ class SuiSubscription extends SuiAppModel
 		)
 	);
 
+	var $hasAndBelongsToMany = array(
+		'Sui.SuiPaymentInterval'
+	);
+
 	protected $YAMLCache = array();
 
 /**
@@ -116,7 +120,8 @@ class SuiSubscription extends SuiAppModel
 			'conditions' => array('SuiSubscription.id' => $sui_subscription_id),
 			'contain' => array(
 				'SuiApplicationPeriod' => 'SuiPeriodCost',
-				'SuiText'
+				'SuiText',
+				'SuiPaymentInterval'
 			)
 		));
 	}

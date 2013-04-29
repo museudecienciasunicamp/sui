@@ -212,6 +212,19 @@ echo $this->Buro->sform(array(), array(
 					)
 				);
 
+			echo $this->Buro->input(
+					array(),
+					array(
+						'type' => 'relational',
+						'label' => __d('sui', 'sui subscription form - payment intervals label', true),
+						'instructions' => __d('sui', 'sui subscription form - payment intervals instructions', true),
+						'options' => array(
+							'type' => 'editable_list',
+							'model' => 'Sui.SuiPaymentInterval'
+						)
+					)
+				);
+
 			// A big kludge to show the relational validation
 			echo $this->Bl->div(
 				array('class' => 'input', 'style' => 'border: 0;'),
@@ -308,6 +321,20 @@ echo $this->Buro->sform(array(), array(
 								'action' => 'list_of_items',
 								$this->data['SuiSubscription']['id']
 							)
+						)
+					)
+				);
+
+			echo $this->Buro->input(
+					array(),
+					array(
+						'type' => 'relational',
+						'label' => __d('sui', 'sui subscription form - payment intervals label', true),
+						'instructions' => __d('sui', 'sui subscription form - payment intervals instructions', true),
+						'options' => array(
+							'type' => 'editable_list',
+							'model' => 'Sui.SuiPaymentInterval',
+							'allow' => array('create', 'relate')
 						)
 					)
 				);

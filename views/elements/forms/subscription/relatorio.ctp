@@ -25,16 +25,50 @@ if (!empty($subscription_config['subscription_steps']['participantes']['equipe_c
 	echo $this->Bl->br();
 }
 
-echo $this->Bl->h4Dry(__d('sui', 'Escola / instituição', true));
-echo $this->Bl->sp();
-	echo h($application['SuiInstitution']['name']);
-	echo '&ensp;(';
-	echo h($application['SuiInstitution']['city']);
-	echo ' &ndash; ';
-	echo h($application['SuiInstitution']['state']);
-	echo ')';
-echo $this->Bl->ep();
-echo $this->Bl->br();
+if (!empty($subscription_config['subscription_steps']['instituicao']))
+{
+	echo $this->Bl->h4Dry(__d('sui', 'Escola / instituição', true));
+	if (empty($application['SuiInstitution']['id']))
+	{
+		echo $this->Bl->pDry('Esta inscrição não está vinculada com uma instituição.');
+	}
+	else
+	{
+		echo $this->Bl->sp();
+			echo h($application['SuiInstitution']['name']);
+			echo '&ensp;(';
+			echo h($application['SuiInstitution']['city']);
+			echo ' &ndash; ';
+			echo h($application['SuiInstitution']['state']);
+			echo ')';
+		echo $this->Bl->ep();
+	}
+	echo $this->Bl->br();
+}
+
+if (!empty($subscription_config['subscription_steps']['pagamento']))
+{
+	echo $this->Bl->h4Dry(__d('sui', 'Pagamento', true));
+	if (!empty($application['SuiApplication']['payment_free']))
+	{
+		echo $this->Bl->pDry('Inscrição isenta de pagamento.');
+	}
+	else
+	{
+		echo $this->Bl->br();
+		echo $this->Bl->anchor(
+			array(),
+			array(
+				'url' => array(
+					'plugin' => 'sui', 'controller' => 'sui_payments', 'action' => 'ver_cobranca', $application['SuiPayment'][0]['id']
+				)
+			),
+			'Visualizar o relatório de pagamento.'
+		);
+		echo $this->Bl->br();
+	}
+	echo $this->Bl->br();
+}
 
 
 $capitao = Set::extract('/SuiApplicationsSuiUser[role_code=capitao]/SuiUser/full_name', $application);

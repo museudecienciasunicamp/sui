@@ -46,15 +46,15 @@ class SuiPaymentsController extends SuiAppController
 				'SuiApplication.status' => 'in_proccess'
 			)
 		));
-		
-		// $this->Session->setFlash(__d('sui', 'O período de inscrições acabou. Não é mais possível gerar pagamento.', true));
-		// $this->redirect(array('plugin' => 'sui', 'controller' => 'sui_main', 'action' => 'index'));
-		
+
 		if (empty($applications))
 		{
 			$this->jodelError('SuiPaymentsController::gerar() - SuiApplication not found.');
 		}
 
+		$value_updated = false;
+		$due_date = false;
+		$smaller_date = time();
 		foreach ($applications as &$application)
 		{
 			$updates = array();
@@ -77,19 +77,46 @@ class SuiPaymentsController extends SuiAppController
 			{
 				$application['SuiApplication']['subscription_fee'] = $fee;
 				$updates['SuiApplication.subscription_fee'] = $fee;
+				$value_updated = true;
 			}
 
-			if ($updates)
+			if (!empty($updates))
 			{
 				$this->SuiApplication->updateAll(
 					$updates, array('SuiApplication.id' => $application['SuiApplication']['id'])
 				);
-
-				if (count($applications) == 1)
-					$this->Session->setFlash(__d('sui', 'Atenção! O valor de sua inscrição foi atualizado pois o período de inscrições mudou. Confira o novo valor da sua inscrição aqui nesta página mesmo.', true));
-				else
-					$this->Session->setFlash(__d('sui', 'Atenção! O valor de suas inscrições foram atualizados pois o período de inscrições mudou. Confira os novos valores de cada inscrição aqui nesta página mesmo.', true));
 			}
+
+			$date = false;
+			if (!empty($application['SuiApplication']['manual_due_date']))
+			{
+				$date = $application['SuiApplication']['manual_due_date'];
+			}
+			elseif (!empty($application['SuiApplicationPeriod']['payment_date']))
+			{
+				$date = $application['SuiApplicationPeriod']['payment_date'];
+			}
+
+			if (!empty($date) && ($date = strtotime($date)) < $smaller_date)
+			{
+				$smaller_date = $date;
+			}
+		}
+
+		if ($smaller_date < mktime(23,59,59))
+		{
+			$this->Session->setFlash(__d('sui', 'Não é mais possível gerar uma cobrança para essa inscrição pois o prazo de pagamento já passou. Se houver outros períodos de inscrição ou prorrogamentos previstos, aguarde até que eles sejam ativados.', true));
+			$this->redirect(array(
+				'plugin' => 'sui', 'controller' => 'sui_main', 'action' => 'index'
+			));
+		}
+
+		if ($value_updated)
+		{
+			if (count($applications) == 1)
+				$this->Session->setFlash(__d('sui', 'Atenção! O valor de sua inscrição pode ter mudado pois o período de inscrições mudou. Confira o novo valor da sua inscrição aqui nesta página mesmo.', true));
+			else
+				$this->Session->setFlash(__d('sui', 'Atenção! O valor de suas inscrições foram atualizados pois o período de inscrições mudou. Confira os novos valores de cada inscrição aqui nesta página mesmo.', true));
 		}
 		
 		$this->set(compact('applications'));
@@ -143,6 +170,7 @@ class SuiPaymentsController extends SuiAppController
 		{
 			// data from POST
 			$payment_data = $this->data;
+			$payment_data['SuiPayment']['responsible_document'] = '';
 			if (isset($this->data['SuiPayment']['responsible_type']))
 			{
 				if ($this->data['SuiPayment']['responsible_type'] == 'pj')
@@ -153,7 +181,7 @@ class SuiPaymentsController extends SuiAppController
 		}
 		
 		$this->SuiPayment->create($payment_data);
-		$error = true;
+		$saved = $error = false;
 		if (!$this->SuiPayment->validates())
 		{
 			$validationErrors = $this->SuiPayment->validationErrors;
@@ -163,7 +191,15 @@ class SuiPaymentsController extends SuiAppController
 			$payment_data['SuiPayment']['sui_user_id'] = $this->museuUserData['SuiUser']['id'];
 			$payment_data['SuiPayment']['status'] = 'waiting';
 			$payment_data['SuiPayment']['generated'] = date('Y-m-d H:i:s');
-			$payment_data['SuiPayment']['due_date'] = $applications[0]['SuiApplicationPeriod']['payment_date'];
+
+			if ($applications[0]['SuiApplication']['manual_due_date'])
+			{
+				$payment_data['SuiPayment']['due_date'] = $applications[0]['SuiApplication']['manual_due_date'];
+			}
+			elseif ($applications[0]['SuiApplicationPeriod']['payment_date'])
+			{
+				$payment_data['SuiPayment']['due_date'] = $applications[0]['SuiApplicationPeriod']['payment_date'];
+			}
 			
 			$total_price = 0;
 			foreach ($applications as $application)
@@ -213,18 +249,16 @@ class SuiPaymentsController extends SuiAppController
 			
 			
 			$this->SuiPayment->getDatasource()->begin($this->SuiPayment);
-			$error = !$this->SuiPayment->save($payment_data);
-			
+			$saved = $this->SuiPayment->save($payment_data);
 			$payment_id = $this->SuiPayment->id;
-			
+
 			foreach ($applications as $application)
 			{
 				$application['SuiApplication']['step_status'] = 'generated';
 				unset($application['SuiApplication']['created']);
-				$error = $error || !$this->SuiApplication->save($application);
+				$saved = $saved && $this->SuiApplication->save($application);
 			}
-			
-			$saved = !$error;
+
 			if ($saved)
 			{
 				$this->SuiPayment->getDatasource()->commit($this->SuiPayment);

@@ -7,7 +7,7 @@ module: "generic_subscription"
 need_invitation: false
 quem_pode: ["estudante", "professor", "diretor", "secretario", "outro"]
 promote: true
-type: 'agendamento'		# grande_evento, agendamento, simples	
+type: 'agendamento'
 subscription_steps:
   regulamento:
     title: "Regulamento"
@@ -38,7 +38,7 @@ subscription_steps:
         precisa: [1,5]
         quem_pode: ["estudante"]
 
-  formulario_proprio
+  formulario_proprio:
     title: "Formulário adicional de cadastro"
 
   confirmacao:

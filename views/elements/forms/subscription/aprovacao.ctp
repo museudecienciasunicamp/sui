@@ -142,14 +142,15 @@ switch ($application['SuiApplication']['status'])
 
 			case 'approved':
 				echo $this->Bl->h4Dry(__d('sui', 'A sua inscrição foi aprovada pelo Museu e poderá seguir adiante. Prossiga com a sua inscrição clicando no botão "Próxima etapa" logo abaixo.', true));
-				echo $this->Bl->hr(array('class' => 'dotted'));
 
-				lastFeedback($this, $application['SuiFeedback'][0]);
+				if (!empty($application['SuiFeedback'][0]['comment']))
+				{
+					echo $this->Bl->hr(array('class' => 'dotted'));
+					lastFeedback($this, $application['SuiFeedback'][0]);
+				}
 
-				echo $this->Bl->hr(array('class' => 'dotted'));
-				echo $this->Bl->br();
-				
-				printLog($this);
+				if (!empty($application['SuiFeedback']))
+					printLog($this);
 				
 				break;
 		}

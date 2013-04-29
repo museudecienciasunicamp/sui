@@ -78,39 +78,63 @@ echo $this->Bl->sbox(array(), array('size' => array('M' => 7, 'g' => -1), 'type'
 	echo $this->Bl->ediv();
 	
 	echo $this->Bl->sp();
-		echo $this->Bl->span(
-			array('style' => 'font-weight: bold;'), null,
-			String::insert(
-				__d('sui', 'A cobrança foi gerada e deve ser paga até :data', true),
-				array('data' => $this->Bl->date(array(), array('date' => $payment['SuiPayment']['due_date'])))
-			)
-		);
-		echo $this->Bl->br();
-		echo __d('sui', 'Estamos aguardando a confirmação do pagamento pela Funcamp. Se você já pagou, pode demorar até 4 dias úteis para que a cobrança seja registrada', true);
-	echo $this->Bl->ep();
-	
-	echo $this->Bl->verticalSpacer();
-	echo $this->Bl->anchor(
-		array(), 
-		array('url' => array('plugin' => 'sui', 'controller' => 'sui_payments', 'action' => 'boleto_funcamp', $payment['SuiPayment']['id'])),
-		__d('sui', 'Visualizar o boleto', true)
-	);
+		switch ($payment['SuiPayment']['status'])
+		{
+			case 'waiting':
+				echo $this->Bl->span(
+					array('style' => 'font-weight: bold;'), null,
+					String::insert(
+						__d('sui', 'A cobrança foi gerada e deve ser paga até :data', true),
+						array('data' => $this->Bl->date(array(), array('date' => $payment['SuiPayment']['due_date'])))
+					)
+				);
+				echo $this->Bl->br();
+				echo __d('sui', 'Estamos aguardando a confirmação do pagamento pela Funcamp. Se você já pagou, pode demorar até 4 dias úteis para que a cobrança seja registrada', true);
+				echo $this->Bl->verticalSpacer();
+				echo $this->Bl->anchor(
+					array(), 
+					array('url' => array('plugin' => 'sui', 'controller' => 'sui_payments', 'action' => 'boleto_funcamp', $payment['SuiPayment']['id'])),
+					__d('sui', 'Visualizar o boleto', true)
+				);
+				break;
 
-	echo $this->Bl->br();
-	echo $this->Bl->br();
+			case 'received':
+				echo __d('sui', 'Pagamento recebido em ', true),
+					 $this->Bl->span(
+						array('style' => 'font-weight: bold;'), array(),
+						$this->Bl->date(array(), array('date' => $payment['SuiReceivedPayment'][0]['created']))
+					);
+				break;
+
+			case 'expired':
+				echo __d('sui', 'Este pagamento perdeu a validade e não pode mais ser pago. Se as inscrições estiverem abertas, ainda, você poderá cancelar esta e gerar uma nova.', true);
+				break;
+
+			default:
+				echo 'Algo de errado aconteceu com o seu pagamento. Entre em contato com o Museu para maiores informações.';
+		}
+	echo $this->Bl->ep();
+
+	echo $this->Bl->verticalSpacer();
+	echo $this->Bl->verticalSpacer();
 	
 	echo $this->Bl->h4Dry(__d('sui', 'Opções', true));
 	echo $this->Bl->br();
-	echo $this->Bl->anchor(
-		array(
-			'onclick' => "return confirm('Atenção: Essa ação não poderá ser desfeita.\\nVocê deseja, realmente, cancelar essa cobrança? ');"
-		), 
-		array('url' => array(
-			'plugin' => 'sui', 'controller' => 'sui_payments', 'action' => 'cancelar', $payment['SuiPayment']['id']
-		)),
-		__d('sui', 'Cancelar esta cobrança', true)
-	);
-	echo $this->Bl->br();
+
+	if (in_array($payment['SuiPayment']['status'], array('waiting', 'expired')))
+	{
+		echo $this->Bl->anchor(
+			array(
+				'onclick' => "return confirm('Atenção: Essa ação não poderá ser desfeita.\\nVocê deseja, realmente, cancelar essa cobrança? ');"
+			), 
+			array('url' => array(
+				'plugin' => 'sui', 'controller' => 'sui_payments', 'action' => 'cancelar', $payment['SuiPayment']['id']
+			)),
+			__d('sui', 'Cancelar esta cobrança', true)
+		);
+		echo $this->Bl->br();
+	}
+
 	echo $this->Bl->anchor(
 		array(), 
 		array('url' => array(

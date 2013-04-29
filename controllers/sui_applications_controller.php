@@ -114,6 +114,51 @@ class SuiApplicationsController extends SuiAppController
 	}
 
 /**
+ * Backstage action: configs the payment step
+ * 
+ * @access public
+ */
+	function admin_payment()
+	{
+		$saved = $error = false;
+		$this->loadModel('Sui.SuiApplication');
+
+		if (!isset($this->data['SuiApplication']['id']))
+		{
+			$error = 'empty-application-id';
+			goto renderAdminPayment;
+		}
+
+		$this->SuiApplication->contain();
+		$application = $this->SuiApplication->findById($this->data['SuiApplication']['id']);
+		if (empty($application))
+		{
+			$error = 'application-not-found';
+			goto renderAdminPayment;
+		}
+
+		if ($application['SuiApplication']['current_step'] == 'pagamento' && $application['SuiApplication']['step_status'] == 'generated')
+		{
+			$error = 'application-with-active-payment';
+			goto renderAdminPayment;
+		}
+
+		if (!empty($application['SuiApplication']['payment_data_at']))
+		{
+			$error = 'already_paid';
+			goto renderAdminPayment;
+		}
+
+		$saved = (boolean) $this->SuiApplication->save($this->data);
+		// @todo Send e-mail to user about the price definition
+		// @todo Advance step if the application is on payment step and it is free of charge
+
+		renderAdminPayment:
+		$this->view = 'JjUtils.Json';
+		$this->set('jsonVars', compact('error', 'saved'));
+	}
+
+/**
  * Backstage action: renders a spreadsheet for export the applications
  * 
  * @access public

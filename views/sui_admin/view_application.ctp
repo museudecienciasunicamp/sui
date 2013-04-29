@@ -26,6 +26,7 @@ $status = array(
 	'generated' => 'Gerado',
 	'cancelled' => 'Cancelado',
 	'completed' => 'Completo',
+	'approved' => 'Aprovado',
 	'in_proccess' => 'Em processo',
 	'expired' => 'Expirado',
 	'new' => 'Novo',

@@ -17,5 +17,13 @@ $config['Sui.subscription_models'] = array(
 	'gd' => 'Grande Desafio',
 	'ui' => 'Unicamp Itinerante',
 	'acervo' => 'Acervo Digital',
-	'od_na_pte_ct' => 'Oficina/Nano/Praça TE/Praça TC'
+	'od_na_pte_ct' => 'Oficina/Nano/Praça TE/Praça TC',
+	'event' => 'Evento simples',
+	'event_approval' => 'Evento simples com etapa de aprovação do Museu',
+	'event_approval_payment' => 'Evento com etapa de aprovação e pagamento',
+	'event_payment' => 'Evento com etapa de pagamento',
+	'event_team' => 'Evento com equipe de 1 responsável (orientador) e de 1 a 5 membros (estudantes)',
+	'event_team_approval' => 'Evento com equipe e etapa de aprovação do Museu',
+	'event_team_approval_payment' => 'Evento com equipe, etapa de aprovação do Museu e pagamento',
+	'event_team_payment' => 'Evento com equipe e etapa de pagamento',
 );

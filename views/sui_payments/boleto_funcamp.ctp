@@ -126,11 +126,16 @@
 		<tr>
 			<td>
 				 <p class="fonte2"><?php 
-				 	
+				 	$team = !empty($subscription['SuiSubscription']['configuration']['subscription_steps']['participantes']['equipe_com_nome']);
 				 	echo 'Pagamento das seguntes inscrições para ',$subscription['SuiSubscription']['title'],':'; 
 				 	echo '<br>';
 				 	foreach ($payment['SuiApplication'] as $application)
-				 		echo String::insert('Equipe ":team_name" (:code)', $application), '; &ensp;';
+				 	{
+						if ($team)
+							echo String::insert('Equipe ":team_name" (:code)', $application), '; &ensp;';
+						else
+							echo String::insert('Inscrição :code', $application), '; &ensp;';
+					}
 				 ?>
 				 </p>
 			</td>

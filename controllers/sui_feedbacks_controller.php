@@ -138,6 +138,7 @@ class SuiFeedbacksController extends SuiAppController
 				),
 				'SuiApplication' => array(
 					'id' => $application['SuiApplication']['id'],
+					'payment_free' => $application['SuiApplication']['payment_free']
 				)
 			);
 

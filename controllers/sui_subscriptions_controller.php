@@ -184,13 +184,45 @@ class SuiSubscriptionsController extends SuiAppController
 		$subscription = $this->getStep($slug, $step);
 
 		// If not set an application, then is a new one.
-		if (empty($sui_application_id)) {
+		if (empty($sui_application_id))
+		{
+			$openedSubscription =
+					strtotime($subscription['SuiCurrentApplicationPeriod']['end']) > time()
+				 && strtotime($subscription['SuiCurrentApplicationPeriod']['start']) < time()
+			;
+			if (!$openedSubscription)
+			{
+				$this->Session->setFlash(String::insert(
+					__d('sui', 'O período de inscrições ":periodo" do programa ":programa" está encerrado e não pode mais aceitar novas inscrições.', true),
+					array(
+						'periodo' => $subscription['SuiCurrentApplicationPeriod']['title'],
+						'programa' => $subscription['SuiSubscription']['title']
+					)
+				));
+				$this->redirect(array('plugin' => 'sui', 'controller' => 'sui_main', 'action' => 'index'));
+			}
+
 			$sui_application_id = 'nova';
 			$step = null;
-		} elseif($sui_application_id != 'nova') {
+		}
+		elseif($sui_application_id != 'nova')
+		{
 			$application = $this->SuiApplication->getApplicationForStep($step, $slug, $sui_application_id, $this->SuiAuth->user('id'));
-			if (empty($application)) {
+			if (empty($application))
+			{
 				$this->jodelError('Application[id='.$sui_application_id.'] not found');
+			}
+
+			if ($subscription['SuiSubscription']['subscription_status'] != 'in_proccess'
+				&& $application['SuiApplication']['status'] != 'completed')
+			{
+				$this->Session->setFlash(String::insert(
+					__d('sui', 'As inscrições para ":programa" já estão encerradas.', true),
+					array(
+						'programa' => $subscription['SuiSubscription']['title']
+					)
+				));
+				$this->redirect(array('plugin' => 'sui', 'controller' => 'sui_main', 'action' => 'index'));
 			}
 			
 			if ($step != $application['SuiApplication']['current_step'])
